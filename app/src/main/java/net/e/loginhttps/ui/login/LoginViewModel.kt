@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
 import android.widget.Toast
+import com.google.gson.JsonObject
 import net.e.loginhttps.data.LoginRepository
 import net.e.loginhttps.data.Result
 
@@ -37,13 +38,17 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 //        } else {
 //            _loginResult.value = LoginResult(error = R.string.login_failed)
 //        }
-        getContractAddress(this, username, password)
+        val jsonData = JsonObject()
+        jsonData.addProperty("email",username)
+        jsonData.addProperty("password",password)
+        jsonData.addProperty("device_serial","device_serial")
+        getContractAddress(this, jsonData)
     }
-    private fun getContractAddress(callBack: APICallback, username: String, password: String) {
+    private fun getContractAddress(callBack: APICallback, jsonData: JsonObject) {
         val apiService: ApiInterface =
             ApiClient.getLogin().create(ApiInterface::class.java)
         val call: Call<ContractAddressResponse> =
-            apiService.getLogin(username, password)
+            apiService.getLogin(jsonData)
         Log.d("sos", "---URL--- contract address: " + call.request().url())
         call.enqueue(object : Callback<ContractAddressResponse> {
             override fun onFailure(call: Call<ContractAddressResponse>, t: Throwable) {

@@ -16,8 +16,9 @@ public interface ApiInterface {
     @GET("api/ping")
     fun getPing(): Call<ContractAddressResponse>
 
+    @Headers(
+        "Content-type:application/json")
     @POST("api/device/login")
-    @FormUrlEncoded
-    fun getLogin(@Field("email")email: String, @Field("password")password: String): Call<ContractAddressResponse>
+    fun getLogin(@Body data: JsonObject): Call<ContractAddressResponse>
 
 }
