@@ -1,16 +1,14 @@
 package net.e.loginhttps.ui.login
 
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Patterns
-import android.widget.Toast
+import com.google.gson.Gson
 import com.google.gson.JsonObject
-import net.e.loginhttps.data.LoginRepository
-import net.e.loginhttps.data.Result
-
 import net.e.loginhttps.R
+import net.e.loginhttps.data.LoginRepository
 import net.e.loginhttps.webservice.APICallback
 import net.e.loginhttps.webservice.ApiClient
 import net.e.loginhttps.webservice.ApiInterface
@@ -27,7 +25,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
-    private var contractAddress: String? = null
+    private var contractAddress: JsonObject? = null
 
     fun login(username: String, password: String) {
         // can be launched in a separate asynchronous job
@@ -61,19 +59,18 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             ) {
 
                 try {
-                    var contractAddressResponse: ContractAddressResponse = response.body()!!
-                    Log.d("sos", "contract address Success " + contractAddressResponse.isSuccess())
 
-                    if (contractAddressResponse != null) {
-                        if (contractAddressResponse.isSuccess()!!) {
-                            contractAddress = contractAddressResponse.getContractAddress()
+                    if (response.body() != null) {
+                        var contractAddressResponse: ContractAddressResponse = response.body()!!
+                        Log.d("sos", "contract address Success " + response.body())
+                        contractAddress = contractAddressResponse.getData()
+                        if (contractAddress != null) {
+//                            contractAddress = contractAddressResponse.getData()
                             Log.d(
                                 "sos",
-                                "contract address: get Contract Address:" + contractAddress
+                                "contract address: get Contract Address:" + contractAddress.toString()
                             )
                             callBack.onSuccess(103, contractAddressResponse, response.code())
-
-
                         } else {
                             contractAddressResponse.setMessage("Failed to get the Contract Address")
                             callBack.onFailure(
@@ -82,7 +79,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                         }
 
                     } else {
-                        contractAddressResponse = ContractAddressResponse();
+                        var contractAddressResponse = ContractAddressResponse();
                         contractAddressResponse.setMessage("Failed to get the Contract Address")
                         callBack.onFailure(
                             103,

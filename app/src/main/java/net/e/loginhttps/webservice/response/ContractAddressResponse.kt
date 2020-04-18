@@ -1,32 +1,24 @@
 package net.e.loginhttps.webservice.response
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 
 class ContractAddressResponse {
     private var message: String? = null
-    @SerializedName("result")
+
+    @SerializedName("data")
     @Expose
-    private var result: Boolean? = null
-    @SerializedName("contract-address")
-    @Expose
-    private var contractAddress: String? = null
+    private var data: JsonObject? = null
 
-    fun getResult(): Boolean? {
-        return result
+
+    fun getData(): JsonObject? {
+        return data
     }
 
-    fun setResult(result: Boolean?) {
-        this.result = result
-    }
-
-    fun getContractAddress(): String? {
-        return contractAddress
-    }
-
-    fun setContractAddress(contractAddress: String) {
-        this.contractAddress = contractAddress
+    fun setData(data: JsonObject) {
+        this.data = data
     }
 
     fun setMessage(message: String) {
@@ -37,7 +29,4 @@ class ContractAddressResponse {
         return message!!
     }
 
-    public fun isSuccess(): Boolean? {
-        return result
-    }
 }
