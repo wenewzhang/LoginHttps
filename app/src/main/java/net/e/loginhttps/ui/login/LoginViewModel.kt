@@ -51,6 +51,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         call.enqueue(object : Callback<ContractAddressResponse> {
             override fun onFailure(call: Call<ContractAddressResponse>, t: Throwable) {
                 Log.d("sos", "contract address Failure:" + t.message)
+                _loginResult.value = LoginResult(error = R.string.login_failed_network)
             }
 
             override fun onResponse(
@@ -124,10 +125,12 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     override fun onSuccess(requestCode: Int, obj: Any, code: Int) {
         Log.d("sos", "request code $requestCode")
+        _loginResult.value = LoginResult(success = LoggedInUserView(displayName = "My Friend!"))
     }
 
     override fun onFailure(requestCode: Int, obj: Any, code: Int) {
         Log.d("sos", "onFailure request code $requestCode")
+        _loginResult.value = LoginResult(error = R.string.login_failed_email)
     }
 
     override fun onProgress(requestCode: Int, isLoading: Boolean) {
