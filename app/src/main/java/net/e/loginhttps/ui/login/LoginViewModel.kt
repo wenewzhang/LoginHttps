@@ -18,8 +18,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel(), APICallback {
-
+class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+    companion object {
+        private const val TAG = "LoginViewModel"
+    }
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
@@ -27,7 +29,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     val loginResult: LiveData<LoginResult> = _loginResult
     private var contractAddress: JsonObject? = null
 
-    fun login(username: String, password: String) {
+    fun login(callBack: APICallback, username: String, password: String) {
         // can be launched in a separate asynchronous job
 //        val result = loginRepository.login(username, password)
 //
@@ -40,17 +42,17 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         jsonData.addProperty("email",username)
         jsonData.addProperty("password",password)
         jsonData.addProperty("device_serial","device_serial")
-        getContractAddress(this, jsonData)
+        getContractAddress(callBack, jsonData)
     }
     private fun getContractAddress(callBack: APICallback, jsonData: JsonObject) {
         val apiService: ApiInterface =
             ApiClient.getLogin().create(ApiInterface::class.java)
         val call: Call<ContractAddressResponse> =
             apiService.getLogin(jsonData)
-        Log.d("sos", "---URL--- contract address: " + call.request().url())
+        Log.d(TAG, "---URL--- contract address: " + call.request().url())
         call.enqueue(object : Callback<ContractAddressResponse> {
             override fun onFailure(call: Call<ContractAddressResponse>, t: Throwable) {
-                Log.d("sos", "contract address Failure:" + t.message)
+                Log.d(TAG, "contract address Failure:" + t.message)
             }
 
             override fun onResponse(
@@ -62,12 +64,12 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
                     if (response.body() != null) {
                         var contractAddressResponse: ContractAddressResponse = response.body()!!
-                        Log.d("sos", "contract address Success " + response.body())
+                        Log.d(TAG, "contract address Success " + response.body())
                         contractAddress = contractAddressResponse.getData()
                         if (contractAddress != null) {
 //                            contractAddress = contractAddressResponse.getData()
                             Log.d(
-                                "sos",
+                                TAG,
                                 "contract address: get Contract Address:" + contractAddress.toString()
                             )
                             callBack.onSuccess(103, contractAddressResponse, response.code())
@@ -88,7 +90,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                         )
                     }
                 } catch (e: java.lang.Exception) {
-                    Log.d("sos", "contract address Failure:" + e.message)
+                    Log.d(TAG, "contract address Failure:" + e.message)
 
                 }
 
@@ -122,15 +124,4 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         return password.length > 5
     }
 
-    override fun onSuccess(requestCode: Int, obj: Any, code: Int) {
-        Log.d("sos", "request code $requestCode")
-    }
-
-    override fun onFailure(requestCode: Int, obj: Any, code: Int) {
-        Log.d("sos", "onFailure request code $requestCode")
-    }
-
-    override fun onProgress(requestCode: Int, isLoading: Boolean) {
-        Log.d("sos", "onProgress  $isLoading")
-    }
 }

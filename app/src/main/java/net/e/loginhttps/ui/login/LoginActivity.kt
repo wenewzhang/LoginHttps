@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -16,11 +17,14 @@ import android.widget.ProgressBar
 import android.widget.Toast
 
 import net.e.loginhttps.R
+import net.e.loginhttps.webservice.APICallback
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), APICallback {
 
     private lateinit var loginViewModel: LoginViewModel
-
+    companion object {
+        private const val TAG = "LoginActivity"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -83,6 +87,7 @@ class LoginActivity : AppCompatActivity() {
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
                         loginViewModel.login(
+                            LoginActivity,
                                 username.text.toString(),
                                 password.text.toString()
                         )
@@ -110,6 +115,18 @@ class LoginActivity : AppCompatActivity() {
 
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onSuccess(requestCode: Int, obj: Any, code: Int) {
+        Log.d(TAG, "request code $requestCode")
+    }
+
+    override fun onFailure(requestCode: Int, obj: Any, code: Int) {
+        Log.d(TAG, "onFailure request code $requestCode")
+    }
+
+    override fun onProgress(requestCode: Int, isLoading: Boolean) {
+        Log.d(TAG, "onProgress  $isLoading")
     }
 }
 
