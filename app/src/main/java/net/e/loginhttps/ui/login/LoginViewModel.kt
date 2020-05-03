@@ -12,7 +12,7 @@ import net.e.loginhttps.data.LoginRepository
 import net.e.loginhttps.webservice.APICallback
 import net.e.loginhttps.webservice.ApiClient
 import net.e.loginhttps.webservice.ApiInterface
-import net.e.loginhttps.webservice.response.ContractAddressResponse
+import net.e.loginhttps.webservice.response.LoginResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,24 +45,23 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private fun getContractAddress(callBack: APICallback, jsonData: JsonObject) {
         val apiService: ApiInterface =
             ApiClient.getLogin().create(ApiInterface::class.java)
-        val call: Call<ContractAddressResponse> =
-            apiService.getLogin(jsonData)
+        val call: Call<LoginResponse> = apiService!!.getLogin(jsonData)
         Log.d("sos", "---URL--- contract address: " + call.request().url())
-        call.enqueue(object : Callback<ContractAddressResponse> {
-            override fun onFailure(call: Call<ContractAddressResponse>, t: Throwable) {
+        call.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.d("sos", "contract address Failure:" + t.message)
                 _loginResult.value = LoginResult(error = R.string.login_failed_network)
             }
 
             override fun onResponse(
-                call: Call<ContractAddressResponse>,
-                response: Response<ContractAddressResponse>
+                call: Call<LoginResponse>,
+                response: Response<LoginResponse>
             ) {
 
                 try {
 
-                    if (response.body() != null) {
-                        var contractAddressResponse: ContractAddressResponse = response.body()!!
+                    if (response.isSuccessful) {
+                        var contractAddressResponse: LoginResponse = response.body()!!
                         Log.d("sos", "contract address Success " + response.body())
                         contractAddress = contractAddressResponse.getData()
                         if (contractAddress != null) {
@@ -80,7 +79,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                         }
 
                     } else {
-                        var contractAddressResponse = ContractAddressResponse();
+                        Log.d("sos", "login Failure")
+                        var contractAddressResponse = LoginResponse();
                         contractAddressResponse.setMessage("Failed to get the Contract Address")
                         callBack.onFailure(
                             103,

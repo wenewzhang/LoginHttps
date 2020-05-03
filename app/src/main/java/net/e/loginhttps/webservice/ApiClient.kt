@@ -1,5 +1,6 @@
 package net.e.loginhttps.webservice
 
+import android.util.Log
 import com.google.gson.GsonBuilder
 import net.e.loginhttps.webservice.Url.Companion.BASE_URL
 import retrofit2.Retrofit
@@ -35,6 +36,7 @@ class ApiClient {
         }
 
         fun getLogin(): Retrofit {
+            Log.d("sos", "fun getLogin(): Retrofit")
             val gson = GsonBuilder()
                 .setLenient()
                 .create()

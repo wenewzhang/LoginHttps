@@ -1,6 +1,6 @@
 package net.e.loginhttps.webservice
 
-import net.e.loginhttps.webservice.response.ContractAddressResponse
+import net.e.loginhttps.webservice.response.LoginResponse
 import com.google.gson.JsonObject
 import retrofit2.Call
 //import retrofit2.http.Field
@@ -14,11 +14,11 @@ public interface ApiInterface {
 //    fun getKeyDetails(): Call<StoreKeyResponse>
 
     @GET("api/ping")
-    fun getPing(): Call<ContractAddressResponse>
+    fun getPing(): Call<LoginResponse>
 
     @Headers(
         "Content-type:application/json")
     @POST("api/device/login")
-    fun getLogin(@Body data: JsonObject): Call<ContractAddressResponse>
+    fun getLogin(@Body data: JsonObject): Call<LoginResponse>
 
 }
